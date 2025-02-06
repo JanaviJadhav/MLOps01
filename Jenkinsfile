@@ -4,7 +4,7 @@ pipeline {
         DOCKERHUB_CREDENTIAL_ID = 'mlops-jenkins-dockerhub-token'
         DOCKERHUB_REGISTRY = 'https://registry.hub.docker.com'
         DOCKERHUB_REPOSITORY = 'iquantc/mlops-proj-01'
-        VENV_PATH = '/opt/venv'  // Set Virtual Environment Path
+        VENV_PATH = 'venv'  // Set Virtual Environment Path
     }
     stages {
         stage('Clone Repository') {
