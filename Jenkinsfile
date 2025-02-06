@@ -21,7 +21,7 @@ pipeline {
                     echo 'Setting up Virtual Environment...'
                     sh """
                         python3 -m venv ${VENV_PATH}
-                        source ${VENV_PATH}/bin/activate
+                        . ${VENV_PATH}/bin/activate  # Fixed 'source' issue
                         ${VENV_PATH}/bin/pip install --upgrade pip
                         ${VENV_PATH}/bin/pip install -r requirements.txt
                     """
@@ -33,7 +33,7 @@ pipeline {
                 script {
                     echo 'Linting Python Code...'
                     sh """
-                        source ${VENV_PATH}/bin/activate
+                        . ${VENV_PATH}/bin/activate
                         ${VENV_PATH}/bin/pylint app.py train.py --output=pylint-report.txt --exit-zero
                         ${VENV_PATH}/bin/flake8 app.py train.py --ignore=E501,E302 --output-file=flake8-report.txt
                         ${VENV_PATH}/bin/black app.py train.py
@@ -46,7 +46,7 @@ pipeline {
                 script {
                     echo 'Testing Python Code...'
                     sh """
-                        source ${VENV_PATH}/bin/activate
+                        . ${VENV_PATH}/bin/activate
                         ${VENV_PATH}/bin/pytest tests/
                     """
                 }
