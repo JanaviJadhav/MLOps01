@@ -2,8 +2,8 @@ pipeline {
     agent any
     environment {
         DOCKERHUB_CREDENTIAL_ID = 'mlops-jenkins-dockerhub-token'
-        DOCKERHUB_REGISTRY = 'https://registry.hub.docker.com'
-        DOCKERHUB_REPOSITORY = 'iquantc/mlops-proj-01'
+        DOCKERHUB_REGISTRY = 'https://index.docker.io/v1/'
+        DOCKERHUB_REPOSITORY = 'janavijadhav/mlops-proj-01'
         VENV_PATH = 'venv'  // Set Virtual Environment Path
     }
     stages {
