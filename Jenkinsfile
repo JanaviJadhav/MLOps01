@@ -94,10 +94,9 @@ pipeline {
             // SSH into EC2 and pull/run the latest Docker image
             sh """
                 ssh -o StrictHostKeyChecking=no -i /jenkins-key.pem ec2-user@3.109.184.147 << 'EOF'
-                    sudo docker stop my-app || true
-                    sudo docker rm my-app || true
+                    
                     sudo docker pull janavi31/mlops-proj-01:latest
-                    sudo docker run -d -p 5000:5000 --name my-app janavi31/mlops-proj-01:latest
+                    sudo docker run -d -p 5000:5000 --name custom-jenkins janavi31/mlops-proj-01:latest
                 EOF
             """
         }
