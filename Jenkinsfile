@@ -97,7 +97,7 @@ pipeline {
                 ssh -o StrictHostKeyChecking=no -i /root/.ssh/jenkins-key.pem ubuntu@3.109.184.147 
                     
                      docker pull janavi31/mlops-proj-01:latest
-                     docker run -d -p 5000:5000 --name custom-jenkins janavi31/mlops-proj-01:latest
+                     
                 
             """
         }
