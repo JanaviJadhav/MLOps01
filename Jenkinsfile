@@ -5,6 +5,7 @@ pipeline {
         DOCKERHUB_REGISTRY = 'https://index.docker.io/v1/'
         DOCKERHUB_REPOSITORY = 'janavi31/mlops-proj-01'
         VENV_PATH = 'venv'  // Set Virtual Environment Path
+        SSH_KEY_ID=credentials('6100381f-21ac-4bd0-acda-feee10d14bb0')
     }
     stages {
         stage('Clone Repository') {
@@ -88,18 +89,18 @@ pipeline {
         }
        stage('Deploy to EC2') {
     steps {
-        script {
+        sshagent(credentials: ["6100381f-21ac-4bd0-acda-feee10d14bb0"])
             echo 'Deploying Docker container to Amazon EC2...'
             
             // SSH into EC2 and pull/run the latest Docker image
             sh """
-                ssh -o StrictHostKeyChecking=no -i /id_rsa.pub ubuntu@3.109.184.147 << 'EOF'
+                ssh -o StrictHostKeyChecking=no -i ubuntu@3.109.184.147 << 'EOF'
                     
                     sudo docker pull janavi31/mlops-proj-01:latest
                     sudo docker run -d -p 5000:5000 --name custom-jenkins janavi31/mlops-proj-01:latest
                 EOF
             """
-        }
+    
     }
 }
 
