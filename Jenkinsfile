@@ -89,7 +89,7 @@ pipeline {
         }
        stage('Deploy to EC2') {
     steps {
-        sshagent(credentials: ["6100381f-21ac-4bd0-acda-feee10d14bb0"])
+        sshagent(credentials: ["6100381f-21ac-4bd0-acda-feee10d14bb0"]){
             echo 'Deploying Docker container to Amazon EC2...'
             
             // SSH into EC2 and pull/run the latest Docker image
@@ -100,7 +100,7 @@ pipeline {
                     sudo docker run -d -p 5000:5000 --name custom-jenkins janavi31/mlops-proj-01:latest
                 EOF
             """
-    
+        }
     }
 }
 
