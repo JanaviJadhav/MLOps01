@@ -5,7 +5,7 @@ pipeline {
         DOCKERHUB_REGISTRY = 'https://index.docker.io/v1/'
         DOCKERHUB_REPOSITORY = 'janavi31/mlops-proj-01'
         VENV_PATH = 'venv'  // Set Virtual Environment Path
-        SSH_KEY_PATH = '/root/.ssh/jenkins-key.pem'  // Corrected SSH key path
+        SSH_KEY_ID=credentials('6100381f-21ac-4bd0-acda-feee10d14bb0')
     }
     stages {
         stage('Clone Repository') {
@@ -22,7 +22,7 @@ pipeline {
                     echo 'Setting up Virtual Environment...'
                     sh """
                         python3 -m venv ${VENV_PATH}
-                        source ${VENV_PATH}/bin/activate  # Corrected 'source' usage
+                        . ${VENV_PATH}/bin/activate  # Fixed 'source' issue
                         ${VENV_PATH}/bin/pip install --upgrade pip
                         ${VENV_PATH}/bin/pip install -r requirements.txt
                     """
@@ -34,7 +34,7 @@ pipeline {
                 script {
                     echo 'Linting Python Code...'
                     sh """
-                        source ${VENV_PATH}/bin/activate
+                        . ${VENV_PATH}/bin/activate
                         ${VENV_PATH}/bin/pylint app.py train.py --output=pylint-report.txt --exit-zero
                         ${VENV_PATH}/bin/flake8 app.py train.py --ignore=E501,E302 --output-file=flake8-report.txt
                         ${VENV_PATH}/bin/black app.py train.py
@@ -47,7 +47,7 @@ pipeline {
                 script {
                     echo 'Testing Python Code...'
                     sh """
-                        source ${VENV_PATH}/bin/activate
+                        . ${VENV_PATH}/bin/activate
                         ${VENV_PATH}/bin/pytest tests/
                     """
                 }
@@ -87,22 +87,22 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to EC2') {
-            steps {
-                sshagent(credentials: ["6100381f-21ac-4bd0-acda-feee10d14bb0"]) {
-                    echo 'Deploying Docker container to Amazon EC2...'
+       stage('Deploy to EC2') {
+    steps {
+        sshagent(credentials: ["6100381f-21ac-4bd0-acda-feee10d14bb0"]){
+            echo 'Deploying Docker container to Amazon EC2...'
+            
+            // SSH into EC2 and pull/run the latest Docker image
+            sh """
+                ssh -o StrictHostKeyChecking=no -i /root/.ssh/jenkins-key.pem ubuntu@3.109.184.147 << 'EOF'
                     
-                    // SSH into EC2 and deploy the latest Docker image
-                    sh """
-                        ssh -o StrictHostKeyChecking=no -i ${SSH_KEY_PATH} ubuntu@3.109.184.147 << 'EOF'
-                            sudo docker stop custom-jenkins || true
-                            sudo docker rm custom-jenkins || true
-                            sudo docker pull janavi31/mlops-proj-01:latest
-                            sudo docker run -d -p 5000:5000 --name custom-jenkins janavi31/mlops-proj-01:latest
-                        EOF
-                    """
-                }
-            }
+                    sudo docker pull janavi31/mlops-proj-01:latest
+                    sudo docker run -d -p 5000:5000 --name custom-jenkins janavi31/mlops-proj-01:latest
+                EOF
+            """
         }
+    }
+}
+
     }
 }
